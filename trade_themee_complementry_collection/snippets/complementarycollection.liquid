@@ -2,7 +2,7 @@
   class="complementary-products quick-add-hidden{% if block.settings.make_collapsible_row %} is-accordion{% endif %}{% if block.settings.enable_quick_add %} complementary-products-contains-quick-add{% endif %}"
  
 >
-  {{  block.settings.collection.products_count }}
+  
   {%- if block.settings.collection and block.settings.collection.products_count > 0 -%}
     <aside
       aria-label="{{ 'accessibility.complementary_products' | t }}"
