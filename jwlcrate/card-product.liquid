@@ -196,15 +196,16 @@
             </span>
           {% endif %}
             <span class="badge amount__badge-sale ">
-              {%- if card_product.selected_or_first_available_variant.inventory_management == 'shopify' -%}
-                {% assign variantss =  card_product.variants %}
-                {% assign qty = 0 %}
+              {% assign variantss =  card_product.variants %}
+              {% assign variantfirst =  card_product.variants | first %}
+              {%- if variantfirst.inventory_management == 'shopify' -%}
+               {% assign qty = 0 %}
                 {% for variant in variantss %}
                     {% assign qty = qty | plus: variant.inventory_quantity %}
                 {% endfor %}
                 {%- if qty < 2-%} 
                     Made to order 
-                    {% else %} 
+                {% else %} 
                     Ready to ship 
                 {%- endif -%} 
               {%- endif -%}
