@@ -195,13 +195,18 @@
               {{ price_difference_percent }}{{ 'products.product.off_price' | t }}
             </span>
           {% endif %}
-           <span class="badge amount__badge-sale ">
-            {%- if card_product.available -%}
-               Ready to ship
-            {%- else -%}  
-              Made to order
-              
-            {%- endif -%}
+          <span class="badge amount__badge-sale ">
+              {% assign variantsArr =  card_product.variants %}
+                {% assign qty = 0 %}
+                {% for variant in variantsArr %}
+                    {% assign qty = qty | plus: variant.inventory_quantity %}
+                {% endfor %}
+                {{ qty }}
+                {%- if qty < 2-%} 
+                  Made to order 
+                  {% else %} 
+                  Ready to ship 
+                {%- endif -%} 
             </span>
         </div>
 
