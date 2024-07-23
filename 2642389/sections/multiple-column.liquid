@@ -54,7 +54,7 @@
           {%- if block.settings.image == blank and block.settings.title == blank and block.settings.text == blank and block.settings.link_label == blank and block.settings.custom_liquid == blank -%}
             {%- assign empty_column = ' multicolumn-list__item--empty' -%}
           {%- endif -%}
-          {%  if empty_column == '' %}
+        {%  if empty_column == '' %}
           <li id="Slide-{{ section.id }}-{{ forloop.index }}" class="multicolumn-list__item grid__item{% if section.settings.swipe_on_mobile %} slider__slide{% endif %}{% if section.settings.column_alignment == 'center' %} center{% endif %}{{ empty_column }}" {{ block.shopify_attributes }}>            
             <div class="multicolumn-card content-container">
               {%- if block.settings.image != blank -%}
@@ -101,8 +101,9 @@
                 {%- endif -%}
               </div>
             </div>
-            {% endif %}
+       
           </li>
+          {%  endif %}
         {%- endfor -%}
       </ul>
 
@@ -363,7 +364,7 @@
               "id": "custom_liquid",
               "label": "Custom Liquid",
               "info": "Add app snippets or other Liquid code to create advanced customizations.",
-  	"default": "Default"
+    "default": "Default"
             },
         {
           "type": "text",
