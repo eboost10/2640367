@@ -1,0 +1,15 @@
+{%  assign temp = index | times: 7  %}
+{% if forloop.index == temp  %}
+   
+  {%  if collection.metafields.custom.static_images != blank %} 
+    {% assign images = collection.metafields.custom.static_images.value %}
+    {% for image in images %}
+      {% if forloop.index ==    index %}
+         <div>
+            <img style="max-width: 100%" src=" {{ image | image_url: width: '800x800', crop: 'center' }}" alt="" height="" width="" />
+         </div>
+      {%-  endif  -%} 
+    {%- endfor -%}          
+  {%-  endif  -%}  
+  {% assign index  = index | plus: 1 %}
+ {%  endif %}
