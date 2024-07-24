@@ -105,3 +105,14 @@
     {%- endfor -%}
   </ul>
 </nav>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $(".header__inline-menu details").on('mouseover',function(){
+    $(this).attr('open',true);
+  });
+  $(".header__inline-menu details").on('mouseout',function(){
+    $(this).removeAttr('open');
+  });
+});
+  </script>
