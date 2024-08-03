@@ -37,6 +37,11 @@
       height: 100%;
       max-width: none;
     }
+  @media(max-width: 749px){
+   .video-section .banner.banner--mobile-bottom .banner__content{
+      position: static;
+    }
+  }
 </style>
 {%- liquid
   assign video_id = section.settings.video.id | default: section.settings.video_url.id
@@ -85,7 +90,7 @@
         </div>
       {%- endunless -%}
     </div>
-    <div class=" banner banner--content-align-{{ section.settings.desktop_content_alignment }} banner--content-align-mobile-{{ section.settings.mobile_content_alignment }}">
+    <div class=" banner {% if section.settings.show_text_below %} banner--mobile-bottom {% endif %}  banner--content-align-{{ section.settings.desktop_content_alignment }} banner--content-align-mobile-{{ section.settings.mobile_content_alignment }} {% if section.settings.show_text_box == false %} banner--desktop-transparent{% endif %}" >
        <div class="video-desktop {% if has_video_mobile %} has-video-mobile {% endif %}"> 
         <deferred-media
           class="video-section__media deferred-media gradient global-media-settings{% if section.settings.full_width %} global-media-settings--full-width{% endif %}{% if fix_ratio %} media-fit-cover{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -275,7 +280,7 @@
   </div>
   
 </div>
-<script>
+<!-- <script>
 var videoButton = document.getElementById("Deferred-Poster-Modal-{{- video_id -}}");
 var videoButtonMobile = document.getElementById('Deferred-Poster-Modal-{{ video_id_mobile}}');
  
@@ -301,7 +306,7 @@ var videoButtonMobile = document.getElementById('Deferred-Poster-Modal-{{ video_
       }
   },1000);
 
-</script>
+</script> -->
 {% schema %}
 {
   "name": "t:sections.video.name",
@@ -444,6 +449,12 @@ var videoButtonMobile = document.getElementById('Deferred-Poster-Modal-{{ video_
       ],
       "default": "center",
       "label": "t:sections.image-banner.settings.mobile_content_alignment.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_text_below",
+      "default": true,
+      "label": "t:sections.image-banner.settings.show_text_below.label"
     },
     {
       "type": "checkbox",
