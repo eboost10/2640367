@@ -37,9 +37,25 @@
       height: 100%;
       max-width: none;
     }
+  .video-section .banner--content-align-mobile-center .banner__buttons--multiple>* {
+    min-width: inherit;
+  }
+  .video-section .banner--content-align-mobile-center .banner__buttons--multiple {
+    flex-flow: nowrap;
+  }
+  .video-section .banner:after,
+  .video-section .banner__media:after {
+    opacity: 0.5;
+  }
   @media(max-width: 749px){
+    .video-section .banner:not(.banner--mobile-bottom) video{
+      min-height: var(--min-height);
+    } 
    .video-section .banner.banner--mobile-bottom .banner__content{
       position: static;
+    }
+    .video-section .banner:not(.banner--mobile-bottom) .video-section__media.deferred-media {
+      min-height: var(--min-height);
     }
   }
 </style>
@@ -152,7 +168,7 @@
                   autoplay: true,
                   loop: section.settings.enable_video_looping,
                   controls: true,
-                  muted: false
+                  muted: true
               }}
             {%- endif -%}
           </template>
@@ -220,7 +236,7 @@
                   autoplay: true,
                   loop: section.settings.enable_video_looping,
                   controls: true,
-                  muted: false
+                  muted: true
               }}
             {%- endif -%}
           </template>
@@ -280,33 +296,25 @@
   </div>
   
 </div>
-<!-- <script>
-var videoButton = document.getElementById("Deferred-Poster-Modal-{{- video_id -}}");
-var videoButtonMobile = document.getElementById('Deferred-Poster-Modal-{{ video_id_mobile}}');
- 
-  setTimeout(function(){
-    if( window.screen.width > 749){
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>      
+<script>
+$(document).ready(function(){
+  $('.section-{{ section.id }}-padding').css('--min-height', $('.banner__box').outerHeight() + 'px')
+  var videoButton = $("#Deferred-Poster-Modal-{{- video_id -}}");
+  var videoButtonMobile =$('#Deferred-Poster-Modal-{{ video_id_mobile}}');
+  {%  if has_video_mobile  %}
+    if( $( window ).width() > 749){
       videoButton.click();
     }else{
-      videoButtonMobile.click();
-    }
-  },500)
-  setTimeout(function(){
-     var videos = document.querySelectorAll(".video-section video");
-      if(videos.length > 0){
-        videos.forEach(function(video){
-           video.onloadeddata = function() {
-              if( window.screen.width > 749){
-                videoButton.click();
-              }else{
-                videoButtonMobile.click();
-              }
-            }; 
-        })
-      }
-  },1000);
+        videoButtonMobile.click();
+    } 
+    {%  else %}
+    videoButton.click();
+    {%  endif %}
+})
 
-</script> -->
+
+</script> 
 {% schema %}
 {
   "name": "t:sections.video.name",
