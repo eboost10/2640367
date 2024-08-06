@@ -60,20 +60,6 @@
     .video-section .banner:not(.banner--mobile-bottom) .video-section__media.deferred-media {
       min-height: var(--min-height);
     }
-    .video-section h2.h1 {
-      font-size: 4vw;
-    }
-    .video-section .banner--content-align-mobile-center .banner__buttons  > *,
-    .video-section .banner__box .banner__heading + * {
-      font-size: 2vw;
-    }
-    .video-section .banner--content-align-mobile-center .banner__buttons  > * {
-      letter-spacing: 0.1vw;
-    }
-    .video-section .banner--content-align-mobile-center .banner__buttons .button {
-      padding: 0 4vw;
-      min-height: 6vw;
-    }
     .video-section .banner__content {
       align-items: flex-end;
     }
@@ -319,7 +305,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>      
 <script>
 $(document).ready(function(){
-  $('.section-{{ section.id }}-padding').css('--min-height', $('.banner__box').outerHeight() + 'px')
+  $('.section-{{ section.id }}-padding').css('--min-height', $('.banner__content').outerHeight() + 'px')
   var videoButton = $("#Deferred-Poster-Modal-{{- video_id -}}");
   var videoButtonMobile =$('#Deferred-Poster-Modal-{{ video_id_mobile}}');
   {%  if has_video_mobile  %}
