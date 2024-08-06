@@ -48,6 +48,9 @@
     opacity: 0.5;
   }
   @media(max-width: 749px){
+    .video-section .banner .banner__content {
+      min-height: 39rem;
+    }
     .video-section .banner:not(.banner--mobile-bottom) video{
       min-height: var(--min-height);
     } 
@@ -70,6 +73,9 @@
     .video-section .banner--content-align-mobile-center .banner__buttons .button {
       padding: 0 4vw;
       min-height: 6vw;
+    }
+    .video-section .banner__content {
+      align-items: flex-end;
     }
   }
 </style>
