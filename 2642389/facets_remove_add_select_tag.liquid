@@ -1,0 +1,180 @@
+{% comment %}
+  Renders facets (filtering and sorting)
+
+  Accepts:
+  - results: {Object} Collection or Search object
+  - enable_filtering: {Boolean} Show filtering when true
+  - enable_sorting: {Boolean} Show sorting when true
+  - filter_type: {String} Type of filter
+  - paginate: {Object}
+
+  Usage:
+  {% render 'facets', results: collection, enable_filtering: true, enable_sorting: true, filter_type: 'vertical', paginate: paginate %}
+{% endcomment %}
+<div class="facets_new">
+<style>
+  .facets__form .product-count {
+    display: none;
+  }
+  .facets_new .facet-filters {
+    padding-left: 00
+  }
+</style>
+{%- liquid
+  assign sort_by = results.sort_by | default: results.default_sort_by
+  assign total_active_values = 0
+  assign default_presentation = 'text'
+  if results.url
+    assign results_url = results.url
+  else
+    assign terms = results.terms | escape
+    assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+  endif
+-%}
+{% unless collection.all_tags.size == 0 %}
+
+      <div class="filters-toolbar__item-child facet-filters__field" style="display: flex; justify-content: center;gap: 10px;">
+        <h2 class="facet-filters__label caption-large text-body"><label class="filters-toolbar__label select-label " for="FilterTags">Select Club/Country</label></h2>
+        <div class="select">
+          <select class="facet-filters__sort select__select caption-large filters-toolbar__input" name="FilterTags" id="FilterTags" aria-describedby="a11y-refresh-page-message a11y-selection-message" data-select-input>
+            <option value="{{ collection.url }}">All</option>
+            {% for tag in collection.all_tags %}
+              {%- assign new_url = tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first -%}
+              <option value="{{ new_url }}"{% if current_tags contains tag %} selected="selected"{% endif %}>{{ tag }}</option>
+            {% endfor %}
+          </select>
+           {% render 'icon-caret' %}
+        </div>
+      
+       </div>
+    {% endunless %}
+<div style="justify-content: center;" class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+ 
+    {%- if enable_sorting -%}
+            <div class="facet-filters sorting caption">
+              <div class="facet-filters__field">
+                <h2 class="facet-filters__label caption-large text-body">
+                  <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+                </h2>
+                <div class="select">
+                  {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+                  <select
+                    name="sort_by"
+                    class="facet-filters__sort select__select caption-large"
+                    id="SortBy"
+                    aria-describedby="a11y-refresh-page-message"
+                  >
+                    {%- for option in results.sort_options -%}
+                      <option
+                        value="{{ option.value | escape }}"
+                        {% if option.value == sort_by %}
+                          selected="selected"
+                        {% endif %}
+                      >
+                        {{ option.name | escape }}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                  {% render 'icon-caret' %}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+</div>
+  </div>
+<script>
+  Filters = (function() {
+  var selectors = {
+    filterSelection: '#FilterTags',
+    sortSelection: '#SortBy',
+    selectInput: '[data-select-input]'
+  };
+
+  function Filters() {
+    this.filterSelect = document.querySelector(selectors.filterSelection);
+    this.sortSelect = document.querySelector(selectors.sortSelection);
+
+    this.selects = document.querySelectorAll(selectors.selectInput);
+
+    if (this.sortSelect) {
+      this.defaultSort = _getDefaultSortValue();
+    }
+
+    if (this.selects.length) {
+      this.selects.forEach(function(select) {
+        select.classList.remove('hidden');
+      });
+    }
+
+
+    if (this.filterSelect) {
+      this.filterSelect.addEventListener(
+        'change',
+        _onFilterChange.bind(this)
+      );
+    }
+
+    if (this.sortSelect) {
+      this.sortSelect.addEventListener('change',_onSortChange.bind(this));
+    }
+
+    _initParams();
+  }
+  function _initParams() {
+    this.queryParams = {};
+    if (location.search.length) {
+      var aKeyValue;
+      var aCouples = location.search.substr(1).split('&');
+      for (var i = 0; i < aCouples.length; i++) {
+        aKeyValue = aCouples[i].split('=');
+        if (aKeyValue.length > 1) {
+          this.queryParams[
+            decodeURIComponent(aKeyValue[0])
+          ] = decodeURIComponent(aKeyValue[1]);
+        }
+      }
+    }
+  }
+  function _onSortChange() {
+    this.queryParams.sort_by = _getSortValue();
+
+    if (this.queryParams.page) {
+      delete this.queryParams.page;
+    }
+
+    window.location.search = decodeURIComponent(
+      new URLSearchParams(Object.entries(this.queryParams)).toString()
+    );
+  }
+
+    function _onFilterChange() {
+      document.location.href = _getFilterValue();
+    }
+
+    function _getFilterValue() {
+      return this.filterSelect.value;
+    }
+
+    function _getSortValue() {
+      return this.sortSelect.value || this.defaultSort;
+    }
+
+    function _getDefaultSortValue() {
+      return this.sortSelect.dataset.defaultSortby;
+    }
+    
+    function onUnload() {
+      if (this.filterSelect) {
+        this.filterSelect.removeEventListener('change', _onFilterChange);
+      }
+
+      if (this.sortSelect) {
+        this.sortSelect.removeEventListener('change', _onSortChange);
+      }
+
+    }
+
+  return Filters;
+})();
+  Filters();
+</script>
