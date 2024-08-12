@@ -16,8 +16,25 @@
   .facets__form .product-count {
     display: none;
   }
+  .facets_new .facet-filters__label {
+    margin: 0;
+  }
+  .facets_new .facet-filters__field{
+    gap: 10px;
+  }
   .facets_new .facet-filters {
-    padding-left: 00
+    padding-left: 0;
+  }
+  .facet-filters__field .select {
+    min-width: 160px;
+  }
+  .facet-filters__field .select select {
+    box-shadow: 0 0 0!important;
+  }
+  .facet-filters__label label {
+    text-transform: none!important;
+    min-width: 120px;
+    display: inline-block;
   }
 </style>
 {%- liquid
@@ -33,8 +50,8 @@
 -%}
 {% unless collection.all_tags.size == 0 %}
 
-      <div class="filters-toolbar__item-child facet-filters__field" style="display: flex; justify-content: center;gap: 10px;">
-        <h2 class="facet-filters__label caption-large text-body"><label class="filters-toolbar__label select-label " for="FilterTags">Select Club/Country</label></h2>
+      <div class="filters-toolbar__item-child facet-filters__field" style="display: flex; justify-content: center;">
+        <h2 class="facet-filters__label caption-large text-body"><label class="filters-toolbar__label select-label " for="FilterTags">Club/Country</label></h2>
         <div class="select">
           <select class="facet-filters__sort select__select caption-large filters-toolbar__input" name="FilterTags" id="FilterTags" aria-describedby="a11y-refresh-page-message a11y-selection-message" data-select-input>
             <option value="{{ collection.url }}">All</option>
@@ -48,13 +65,13 @@
       
        </div>
     {% endunless %}
-<div style="justify-content: center;" class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+<div style="justify-content: center;display: flex;" class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
  
     {%- if enable_sorting -%}
             <div class="facet-filters sorting caption">
               <div class="facet-filters__field">
                 <h2 class="facet-filters__label caption-large text-body">
-                  <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+                  <label for="SortBy">Sort by</label>
                 </h2>
                 <div class="select">
                   {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
