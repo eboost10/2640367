@@ -22,6 +22,9 @@
   .facets_new .facet-filters__field{
     gap: 10px;
   }
+  .facets_new .facet-filters__sort + .icon-caret {
+    right: 10px;
+  }
   .facets_new .facet-filters {
     padding-left: 0;
   }
@@ -30,11 +33,33 @@
   }
   .facet-filters__field .select select {
     box-shadow: 0 0 0!important;
+    border: none!important;
+    outline: none!important;
+    padding: 10px;
+    background: #f4f4f4;
   }
   .facet-filters__label label {
     text-transform: none!important;
     min-width: 120px;
     display: inline-block;
+  }
+  .filters-toolbar__item-child.facet-filters__field{
+    display: flex; align-items: center; margin-bottom: 10px;
+    flex-flow: row;
+    justify-content: flex-start;
+  }
+  @media(max-width: 749px){
+    .facets_new .facet-filters,
+    .facet-filters__field .select {
+      width: 100%;
+    }
+    .filters-toolbar__item-child.facet-filters__field{
+     align-items: flex-start; 
+    }
+     .facets_new .facet-filters__field{
+        flex-flow: column;
+        align-items: flex-start;
+      }
   }
 </style>
 {%- liquid
@@ -50,7 +75,7 @@
 -%}
 {% unless collection.all_tags.size == 0 %}
 
-      <div class="filters-toolbar__item-child facet-filters__field" style="display: flex; justify-content: center;">
+      <div class="filters-toolbar__item-child facet-filters__field" >
         <h2 class="facet-filters__label caption-large text-body"><label class="filters-toolbar__label select-label " for="FilterTags">Club/Country</label></h2>
         <div class="select">
           <select class="facet-filters__sort select__select caption-large filters-toolbar__input" name="FilterTags" id="FilterTags" aria-describedby="a11y-refresh-page-message a11y-selection-message" data-select-input>
@@ -65,7 +90,7 @@
       
        </div>
     {% endunless %}
-<div style="justify-content: center;display: flex;" class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+<div style="justify-content: flex-start;display: flex; margin-bottom: 30px;" class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
  
     {%- if enable_sorting -%}
             <div class="facet-filters sorting caption">
