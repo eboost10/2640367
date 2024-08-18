@@ -311,3 +311,11 @@
 .product-card-wrapper > .card > .card__inner  > .card__content {
   pointer-events: none;
 }
+.card--card .card__inner .card__media .slick-prev, 
+.card--card .card__inner .card__media .slick-next {
+    display: none!important;
+}
+.card--card:hover .card__inner .card__media .slick-prev, 
+.card--card:hover .card__inner .card__media .slick-next {
+    display: flex!important;
+}
