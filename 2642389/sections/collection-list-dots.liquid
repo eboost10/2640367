@@ -19,15 +19,7 @@
   .section-{{ section.id }}-padding .slideshow__controls{
     border: none;
   }
-  @media screen and (max-width: 989px) {
-    .collection-list-wrapper .slider {
-      scroll-padding-left: 0!important;
-      gap: 0;
-    }
-    .collection-list-wrapper .slider> li {
-      padding: calc( var(--grid-mobile-horizontal-spacing) / 2);
-    }
-  }
+
 </style>
 {%- liquid
   assign columns_mobile_int = section.settings.columns_mobile | plus: 0
@@ -63,7 +55,7 @@
 
     <slideshow-component class="slider-mobile-gutter{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       <ul
-        class="slideshow collection-list contains-card contains-card--collection{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down{% if section.settings.swipe_on_mobile %} slider slider--tablet {% endif %} collection-list--{{ section.blocks.size }}-items"
+        class="slideshow grid--peek collection-list contains-card contains-card--collection{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down{% if section.settings.swipe_on_mobile %} slider slider--tablet {% endif %} collection-list--{{ section.blocks.size }}-items"
         id="Slider-{{ section.id }}"
         role="list"
       >
