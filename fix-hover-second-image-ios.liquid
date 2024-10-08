@@ -1,0 +1,50 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $(document).on("touchstart",".card-wrapper",function(e){
+      $(".card-wrapper").removeClass('hold');
+      $(this).addClass('hold')
+    })
+    $(".card-wrapper a").attr('oncontextmenu','return false;')
+    $(".card-wrapper a").contextmenu(function(event) {
+         event.preventDefault();
+         event.stopPropagation();
+    });
+   
+  });
+</script>
+<style>
+@media(max-width: 749px){
+  .card a{
+    -webkit-user-select: none;
+ -webkit-touch-callout: none;
+  }
+}
+
+@media(max-width: 989px){
+  .card .media.media--hover-effect > img:only-child,
+  .card-wrapper .media.media--hover-effect > img:only-child {
+    transition: transform var(--duration-long) ease;
+  }
+  
+  .card-wrapper.hold .media.media--hover-effect > img:first-child:only-child {
+    transform: scale(1.03);
+  }
+
+  .card-wrapper.hold .media.media--hover-effect > img:first-child:not(:only-child) {
+    opacity: 0;
+  }
+
+  .card-wrapper.hold .media.media--hover-effect > img + img {
+    opacity: 1;
+    transition: transform var(--duration-long) ease;
+    transform: scale(1.03);
+  }
+
+  .underline-links-hover:hover a {
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
+  }
+
+}
+</style>
