@@ -103,7 +103,9 @@
                   role="list"
                   tabindex="-1"
                 >
-                  {%- for collection in collections  limit: 5 -%}
+                  {%- for block in section.blocks  -%}
+                    {%-  if block.type == 'collection' -%}
+                      {%  assign collection =  block.settings.collection %}
                     <li
                       class="collection-list__item grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                       {% if settings.animations_reveal_on_scroll %}
@@ -117,6 +119,7 @@
                         columns: 3
                       %}
                     </li>
+                    {%-  endif -%}
                   {%- endfor -%}
                 </ul>
                 <div class="btn-view-all">
