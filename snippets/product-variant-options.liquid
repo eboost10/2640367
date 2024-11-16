@@ -77,6 +77,7 @@
       additional_props: input_dataset
     %}
   {%- elsif picker_type == 'button' -%}
+    <div class="option-button">
     <input
       type="radio"
       id="{{ input_id }}"
@@ -105,14 +106,22 @@
     <label for="{{ input_id }}">
       {{- value -}}
       {{ label_unavailable }}
-      {% if  index != 1 %}
+      {%  assign option_size = product.options_with_values | size  %}
+      {% if  index == option_size %}
        {% for variant in product.variants %}
          {%  if currentTitle == variant.title %}
-              <span class="price">{{ variant.price | money }}</span>
+              <span class="price">({{ variant.price | money }})</span>
+            {%  if variant.compare_at_price %}
+              {%  assign save = variant.compare_at_price | minus: variant.price %}
+              {%  assign compare_price = variant.compare_at_price | times: 1.0 %}
+             <span class="save-price">Save {{ save | times: 100 | divided_by: compare_price | round: 2 }}%</span>
+            {%  endif %}
         {%  endif %} 
+        
         {%  endfor %}
        {%  endif %} 
     </label>
+    </div>
   {%- elsif picker_type == 'dropdown' or picker_type == 'swatch_dropdown' -%}
     <option
       id="{{ input_id }}"
