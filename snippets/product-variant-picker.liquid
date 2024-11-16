@@ -57,7 +57,7 @@
     {{ block.shopify_attributes }}
   >
     {%- for option in product.options_with_values -%}
-      {%  assign index = forloop.index %}
+       {%  assign index = forloop.index %}
       {%- liquid
         assign swatch_count = option.values | map: 'swatch' | compact | size
         assign picker_type = block.settings.picker_type
@@ -82,8 +82,7 @@
             product: product,
             option: option,
             block: block,
-            picker_type: picker_type,
-            index: index
+            picker_type: picker_type
           %}
         </fieldset>
       {%- elsif picker_type == 'button' -%}
@@ -101,7 +100,6 @@
         <div class="product-form__input product-form__input--dropdown">
           <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {{ option.name }}
-            
           </label>
           <div class="select">
             {%- if picker_type == 'swatch_dropdown' -%}
@@ -122,7 +120,8 @@
                 product: product,
                 option: option,
                 block: block,
-                picker_type: picker_type
+                picker_type: picker_type,
+                index: index
               %}
             </select>
             <span class="svg-wrapper">
