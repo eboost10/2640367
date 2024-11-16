@@ -12,8 +12,42 @@
   .product-form__input--pill input[type="radio"]:checked + label .price {
     color: inherit;
   }
-  .product-form__input--pill input[type="radio"] + label .price:before {
-    content: ' - '
+
+  .product-form__input input[type="radio"] {
+    position: static;
+    border: none;
+    width: auto;
+    height: auto;
+    clip: inherit;
+    padding: 0;
+    margin: 0;
+  }
+  .option-button {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .product-form__input--pill input[type="radio"] + label {
+    border: none;
+    margin: 0;
+    text-align: left;
+    padding: 0;
+    background: none !important;
+    border-radius: 0;
+    color: rgba(var(--color-foreground)) !important;
+    display: flex;
+    align-items: center;
+    flex: 0 0 calc(100% - 30px);
+    gap: 10px;
+  }
+  :is(.product-form__input--pill, .product-form__input--swatch) .form__label {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .save-price {
+    margin-left: auto;
+    color: green;
   }
 </style>
 {%- unless product.has_only_default_variant -%}
