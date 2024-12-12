@@ -1,0 +1,184 @@
+{%- unless product.has_only_default_variant -%}
+{%- if block.settings.picker_type == 'button' -%}
+  <variant-radios
+    class="no-js-hidden"
+    data-section="{{ section.id }}"
+    data-url="{{ product.url }}"
+    {{ block.shopify_attributes }}
+  >
+  {% assign title_variant =  product.selected_or_first_available_variant.title | split: ' / ' %}
+    {%- for option in product.options_with_values -%}
+      {%  assign index = forloop.index %}
+      <fieldset class="js product-form__input product-form__input--pill">
+        <legend class="form__label">{{ option.name }}</legend>
+     
+        {%- for value in option.values -%}
+          <input
+            type="radio"
+             data-position="{{ option.position }}"
+            id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+            name="{{ option.name }}"
+            value="{{ value | escape }}"
+            form="{{ product_form_id }}"
+            {% if option.selected_value == value %}
+              checked
+            {% endif %}
+          >
+          {%  assign currentTitle = '' %}
+          {% for titleFariant in title_variant %}
+           {% if  index != 1  and index == forloop.index %}
+             {%  assign currentTitle = currentTitle | append: value  %}
+           {%  else  %}
+             {%  assign currentTitle = currentTitle | append: titleFariant   %}
+           {%  endif %} 
+            {%  unless forloop.last %}
+              {%  assign currentTitle = currentTitle | append: ' / '   %}
+            {%  endunless %}
+          {%- endfor -%}  
+          <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
+            {{ value }}
+           {% if  index != 1 %}
+           {% for variant in product.variants %}
+             {%  if currentTitle == variant.title %}
+                  <span class="price">{{ variant.price | money }}</span>
+            {%  endif %} 
+            {%  endfor %}
+           {%  endif %} 
+          </label>
+        {%- endfor -%}
+      </fieldset>
+    {%- endfor -%}
+    <script type="application/json" id="productJSON">
+      {{ product.variants | json }}
+    </script>
+  </variant-radios>
+{%- else -%}
+  <variant-selects
+    class="no-js-hidden"
+    data-section="{{ section.id }}"
+    data-url="{{ product.url }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+      <div class="product-form__input product-form__input--dropdown">
+        <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+          {{ option.name }}
+        </label>
+        <div class="select">
+          <select
+            id="Option-{{ section.id }}-{{ forloop.index0 }}"
+            class="select__select"
+            name="options[{{ option.name | escape }}]"
+            form="{{ product_form_id }}"
+          >
+            {%- for value in option.values -%}
+              <option
+                value="{{ value | escape }}"
+                {% if option.selected_value == value %}
+                  selected="selected"
+                {% endif %}
+              >
+                {{ value }}
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon-caret' %}
+        </div>
+      </div>
+    {%- endfor -%}
+
+    <script type="application/json">
+      {{ product.variants | json }}
+    </script>
+  </variant-selects>
+{%- endif -%}
+{%- endunless -%}
+
+              <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+  var Shopify = Shopify || {};
+  // ---------------------------------------------------------------------------
+  // Money format handler
+  // ---------------------------------------------------------------------------
+    Shopify.money_format = "${{amount}}";
+    Shopify.formatMoney = function(cents, format) {
+      if (typeof cents == 'string') { cents = cents.replace('.',''); }
+      var value = '';
+      var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+      var formatString = (format || this.money_format);
+
+      function defaultOption(opt, def) {
+         return (typeof opt == 'undefined' ? def : opt);
+      }
+
+      function formatWithDelimiters(number, precision, thousands, decimal) {
+        precision = defaultOption(precision, 2);
+        thousands = defaultOption(thousands, ',');
+        decimal   = defaultOption(decimal, '.');
+
+        if (isNaN(number) || number == null) { return 0; }
+
+        number = (number/100.0).toFixed(precision);
+
+        var parts   = number.split('.'),
+            dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands),
+            cents   = parts[1] ? (decimal + parts[1]) : '';
+
+        return dollars + cents;
+      }
+
+      switch(formatString.match(placeholderRegex)[1]) {
+        case 'amount':
+          value = formatWithDelimiters(cents, 2);
+          break;
+        case 'amount_no_decimals':
+          value = formatWithDelimiters(cents, 0);
+          break;
+        case 'amount_with_comma_separator':
+          value = formatWithDelimiters(cents, 2, '.', ',');
+          break;
+        case 'amount_no_decimals_with_comma_separator':
+          value = formatWithDelimiters(cents, 0, '.', ',');
+          break;
+      }
+
+      return formatString.replace(placeholderRegex, value);
+    };
+    $(document).ready(function(){
+        var Pjson = $('#productJSON').html();
+        Pjson = JSON.parse(Pjson);
+        $("variant-radios input").click(function(){
+            var Options = $("variant-radios .product-form__input input:checked");
+            if(Options.length > 1){
+                var crrPossition = $(this).data('position');
+                $("variant-radios input").each(function(){
+                    var __this = $(this);
+                    var dataPosition = __this.data('position');
+                    if( dataPosition != 1){
+                        var titleOption = ''
+                        Options.each(function( index ){
+                            let slah = ' / ';
+                            if(index == (Options.length - 1))
+                                 slah = '';
+                            if($(this).data('position') == dataPosition ){
+                                titleOption = titleOption + __this.val() + slah
+                            }else{
+                                titleOption = titleOption + $(this).val() + slah
+                            }
+                        })
+                        Pjson.forEach(function(variant){
+                            if(variant.title == titleOption ){
+                                __this.next().find('.price').html(Shopify.formatMoney(variant.price,'{{ shop.money_format }}')) 
+                            }
+          
+                        })
+                    }
+                })
+            }
+
+        });
+    });
+</script>
+<style>
+  .price { color: #fff;}
+</style>

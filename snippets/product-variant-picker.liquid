@@ -1,0 +1,224 @@
+{% comment %}
+  Renders product variant-picker
+
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} Id of the product form to which the variant picker is associated.
+  Usage:
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{% endcomment %}
+<style>
+  .product-form__input--pill input[type="radio"]:checked + label .price {
+    color: inherit;
+  }
+
+  .product-form__input input[type="radio"] {
+    position: static;
+    border: none;
+    width: auto;
+    height: auto;
+    clip: inherit;
+    padding: 0;
+    margin: 0;
+  }
+  .option-button {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .product-form__input--pill input[type="radio"] + label {
+    border: none;
+    margin: 0;
+    text-align: left;
+    padding: 0;
+    background: none !important;
+    border-radius: 0;
+    color: rgba(var(--color-foreground)) !important;
+    display: flex;
+    align-items: center;
+    flex: 0 0 calc(100% - 30px);
+    gap: 10px;
+  }
+  :is(.product-form__input--pill, .product-form__input--swatch) .form__label {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .save-price {
+    margin-left: auto;
+    color: green;
+  }
+</style>
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- for option in product.options_with_values -%}
+       {%  assign index = forloop.index %}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {%- if picker_type == 'swatch' -%}
+        <fieldset class="js product-form__input product-form__input--swatch">
+          <legend class="form__label">
+            {{ option.name }}:
+            <span data-selected-value>
+              {{- option.selected_value -}}
+            </span>
+          </legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      {%- elsif picker_type == 'button' -%}
+        <fieldset class="js product-form__input product-form__input--pill">
+          <legend class="form__label">{{ option.name }}</legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type,
+            index: index
+          %}
+        </fieldset>
+      {%- else -%}
+        <div class="product-form__input product-form__input--dropdown">
+          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+            {{ option.name }}
+          </label>
+          <div class="select">
+            {%- if picker_type == 'swatch_dropdown' -%}
+              <span
+                data-selected-value
+                class="dropdown-swatch"
+              >
+                {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+              </span>
+            {%- endif -%}
+            <select
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              class="select__select"
+              name="options[{{ option.name | escape }}]"
+              form="{{ product_form_id }}"
+            >
+              {% render 'product-variant-options',
+                product: product,
+                option: option,
+                block: block,
+                picker_type: picker_type,
+                index: index
+              %}
+            </select>
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+  var Shopify = Shopify || {};
+  // ---------------------------------------------------------------------------
+  // Money format handler
+  // ---------------------------------------------------------------------------
+    Shopify.money_format = "${{amount}}";
+    Shopify.formatMoney = function(cents, format) {
+      if (typeof cents == 'string') { cents = cents.replace('.',''); }
+      var value = '';
+      var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+      var formatString = (format || this.money_format);
+
+      function defaultOption(opt, def) {
+         return (typeof opt == 'undefined' ? def : opt);
+      }
+
+      function formatWithDelimiters(number, precision, thousands, decimal) {
+        precision = defaultOption(precision, 2);
+        thousands = defaultOption(thousands, ',');
+        decimal   = defaultOption(decimal, '.');
+
+        if (isNaN(number) || number == null) { return 0; }
+
+        number = (number/100.0).toFixed(precision);
+
+        var parts   = number.split('.'),
+            dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands),
+            cents   = parts[1] ? (decimal + parts[1]) : '';
+
+        return dollars + cents;
+      }
+
+      switch(formatString.match(placeholderRegex)[1]) {
+        case 'amount':
+          value = formatWithDelimiters(cents, 2);
+          break;
+        case 'amount_no_decimals':
+          value = formatWithDelimiters(cents, 0);
+          break;
+        case 'amount_with_comma_separator':
+          value = formatWithDelimiters(cents, 2, '.', ',');
+          break;
+        case 'amount_no_decimals_with_comma_separator':
+          value = formatWithDelimiters(cents, 0, '.', ',');
+          break;
+      }
+
+      return formatString.replace(placeholderRegex, value);
+    };
+    $(document).ready(function(){
+        var Pjson = $('#productJSON').html();
+        Pjson = JSON.parse(Pjson);
+        $("variant-radios input").click(function(){
+            var Options = $("variant-radios .product-form__input input:checked");
+            if(Options.length > 1){
+                var crrPossition = $(this).data('position');
+                $("variant-radios input").each(function(){
+                    var __this = $(this);
+                    var dataPosition = __this.data('position');
+                    if( dataPosition != 1){
+                        var titleOption = ''
+                        Options.each(function( index ){
+                            let slah = ' / ';
+                            if(index == (Options.length - 1))
+                                 slah = '';
+                            if($(this).data('position') == dataPosition ){
+                                titleOption = titleOption + __this.val() + slah
+                            }else{
+                                titleOption = titleOption + $(this).val() + slah
+                            }
+                        })
+                        Pjson.forEach(function(variant){
+                            if(variant.title == titleOption ){
+                                __this.next().find('.price').html(Shopify.formatMoney(variant.price,'{{ shop.money_format }}')) 
+                            }
+          
+                        })
+                    }
+                })
+            }
+
+        });
+    });
+</script>
