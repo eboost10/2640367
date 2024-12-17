@@ -300,6 +300,23 @@
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
     {% assign check_show = true %}
+
+    {% if template == 'product' %}
+      {% assign collections = product.collections %}
+      {% for collection in collections %}
+        {{ collection.handle }}
+        {% if collection.handle == 'vip-only' %}
+          {% unless customer.tags contains 'VIP' %} {% assign check_show = false %} {% endunless %}
+        {% endif %}
+
+        {% if collection.handle == 'fanatic-only' %}
+          {% unless customer.tags contains 'FANATIC' %}
+            {% assign check_show = false %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     {% if template == 'collection' and collection.handle == 'vip-only' %}
       {% unless customer.tags contains 'VIP' %} {% assign check_show = false %} {% endunless %}
     {% endif %}
