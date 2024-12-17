@@ -304,7 +304,6 @@
     {% if template == 'product' %}
       {% assign collections = product.collections %}
       {% for collection in collections %}
-        {{ collection.handle }}
         {% if collection.handle == 'vip-only' %}
           {% unless customer.tags contains 'VIP' %} {% assign check_show = false %} {% endunless %}
         {% endif %}
