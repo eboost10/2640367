@@ -48,11 +48,11 @@
           {%- for collection in predictive_search.resources.collections -%}
             {% assign check_show_collection = true %}
             {% if collection.handle == 'vip-only' %}
-              {% unless customer.tags contains 'VIP' %} {% assign check_show = false %} {% endunless %}
+              {% unless customer.tags contains 'VIP' %} {% assign check_show_collection = false %} {% endunless %}
             {% endif %}
             {% if collection.handle == 'fanatic-only' %}
               {% unless customer.tags contains 'FANATIC' %}
-                {% assign check_show = false %}
+                {% assign check_show_collection = false %}
               {% endunless %}
             {% endif %}
 
