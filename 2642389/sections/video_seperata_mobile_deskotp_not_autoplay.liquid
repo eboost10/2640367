@@ -324,7 +324,23 @@
     </div>
   </div>
 </div>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>      
+<script>
+$(document).ready(function(){
+  $('.section-{{ section.id }}-padding').css('--min-height', $('.banner__content').outerHeight() + 'px')
+  var videoButton = $("#Deferred-Poster-Modal-{{- video_id -}}");
+  var videoButtonMobile =$('#Deferred-Poster-Modal-{{ video_id_mobile}}');
+  {%  if has_video_mobile  %}
+    if( $( window ).width() > 749){
+      videoButton.click();
+    }else{
+        videoButtonMobile.click();
+    } 
+    {%  else %}
+    videoButton.click();
+    {%  endif %}
+})
+</script> 
 {% schema %}
 {
   "name": "t:sections.video.name",
