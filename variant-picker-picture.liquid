@@ -1,0 +1,191 @@
+{% comment %}
+  Renders product variant options
+
+  Accepts:
+  - product: {Object} product object.
+  - option: {Object} current product_option object.
+  - block: {Object} block object.
+  - picker_type: {String} type of picker to dispay
+
+
+  Usage:
+  {% render 'product-variant-options',
+    product: product,
+    option: option,
+    block: block
+    picker_type: picker_type
+  %}
+{% endcomment %}
+{%- liquid
+  assign product_form_id = 'product-form-' | append: section.id
+-%}
+{% if picker_type == 'button' -%}
+  <div class="box-buttons">
+  {%  endif %}
+{%- for value in option.values -%}
+  {%- liquid
+    assign swatch_focal_point = null
+    if value.swatch.image
+      assign image_url = value.swatch.image | image_url: width: 50
+      assign swatch_value = 'url(' | append: image_url | append: ')'
+      assign swatch_focal_point = value.swatch.image.presentation.focal_point
+    elsif value.swatch.color
+      assign swatch_value = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+    else
+      assign swatch_value = null
+    endif
+
+    assign option_disabled = true
+    if value.available
+      assign option_disabled = false
+    endif
+  -%}
+
+  {%- capture input_id -%}
+    {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
+  {%- endcapture -%}
+
+  {%- capture input_name -%}
+    {{ option.name }}-{{ option.position }}
+  {%- endcapture -%}
+
+  {%- capture input_dataset -%}
+    data-product-url="{{ value.product_url }}"
+    data-option-value-id="{{ value.id }}"
+  {%- endcapture -%}
+
+  {%- capture label_unavailable -%}
+    <span class="visually-hidden label-unavailable">
+      {{- 'products.product.variant_sold_out_or_unavailable' | t -}}
+    </span>
+  {%- endcapture -%}
+
+  {%- if picker_type == 'swatch' -%}
+    {%- capture help_text -%}
+      <span class="visually-hidden">{{ value | escape }}</span>
+      {{ label_unavailable }}
+    {%- endcapture -%}
+    {%
+      render 'swatch-input',
+      id: input_id,
+      name: input_name,
+      value: value | escape,
+      swatch: value.swatch,
+      product_form_id: product_form_id,
+      checked: value.selected,
+      visually_disabled: option_disabled,
+      shape: block.settings.swatch_shape,
+      help_text: help_text,
+      additional_props: input_dataset
+    %}
+  {%- elsif picker_type == 'button' -%}
+<div class="variant-box">
+   {%  assign current_variant = product.selected_or_first_available_variant %}
+   {%  for variant in product.variants %}
+     {%  if variant.title == value %}
+       {%  assign current_variant = variant %}
+     {{
+        variant.featured_media.preview_image
+        | image_url: width: 416
+        | image_tag:
+          loading: 'lazy',
+          sizes: sizes,
+          widths: '54, 74, 104, 162, 208, 324, 416',
+          id: thumbnail_id,
+          alt: variant.featured_media.alt
+        | escape
+      }}
+      
+      {%  endif %}
+   {%  endfor %} 
+  <div class="variant-box-inner">
+    <input
+      type="radio"
+      id="{{ input_id }}"
+      name="{{ input_name | escape }}"
+      value="{{ value | escape }}"
+      form="{{ product_form_id }}"
+      {% if value.selected %}
+        checked
+      {% endif %}
+      {% if option_disabled %}
+        class="disabled"
+      {% endif %}
+      {{ input_dataset }}
+    >
+    <label for="{{ input_id }}">
+      {{ value -}}
+      {{ label_unavailable }}
+    </label>
+     {% render 'price', product: current_variant, price_class: '', show_compare_at_price: true %}
+  </div>
+</div>
+  {%- elsif picker_type == 'dropdown' or picker_type == 'swatch_dropdown' -%}
+    <option
+      id="{{ input_id }}"
+      value="{{ value | escape }}"
+      {% if value.selected %}
+        selected="selected"
+      {% endif %}
+      {% if swatch_value and picker_type == 'swatch_dropdown' %}
+        data-option-swatch-value="{{ swatch_value }}"
+        {% if swatch_focal_point %}
+          data-option-swatch-focal-point="{{ swatch_focal_point }}"
+        {% endif %}
+      {% endif %}
+      {{ input_dataset }}
+    >
+      {% if option_disabled -%}
+        {{- 'products.product.value_unavailable' | t: option_value: value -}}
+      {%- else -%}
+        {{- value -}}
+      {%- endif %}
+    </option>
+  {%- endif -%}
+{%- endfor -%}
+{% if picker_type == 'button' -%}
+  </div>
+  <style>
+  .box-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .variant-box {
+    border: 1px solid;
+    border-radius: 5px;
+    position: relative;
+  }
+  .variant-box img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px 5px 0 0;
+  }
+  .product-form__input .variant-box input[type="radio"] {
+    height: auto;
+    width: auto;
+    overflow: visible;
+    position: static;
+    padding: 0;
+    margin: 0;
+  }
+  .product-form__input--pill .variant-box input[type="radio"] + label {
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0;
+    display: block;
+    text-align: left;
+    padding: 0 0 10px;
+    position: static;
+  }
+  .variant-box-inner {
+    padding: 10px;
+  }
+    
+  .product-form__input--pill .variant-box input[type="radio"] + label::before {
+    z-index: 1;
+  }
+</style>
+{%  endif %}
+
