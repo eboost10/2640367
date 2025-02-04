@@ -21,7 +21,7 @@
 -%}
  {% assign title_variant =  product.selected_or_first_available_variant.title | split: ' / ' %}
 {%- for value in option.values -%}
-  {%  assign indexN = forloop.index %}
+  {%  assign index_N = forloop.index %}
   {%- liquid
     assign swatch_focal_point = null
     if value.swatch.image
@@ -94,12 +94,12 @@
       {{ input_dataset }}
     >
     {%  assign current_title = '' %}
-    {% if title_variant.size > 0  %}
-      {% for titleFariant in title_variant %}
+    {% if title_variant.size > 1  %}
+      {% for title_fariant in title_variant %}
        {% if  index != 1  and index == forloop.index %}
          {%  assign current_title = current_title | append: value  %}
        {%  else  %}
-         {%  assign current_title = current_title | append: titleFariant   %}
+         {%  assign current_title = current_title | append: title_fariant   %}
        {%  endif %} 
         {%  unless forloop.last %}
           {%  assign current_title = current_title | append: ' / '   %}
@@ -117,7 +117,7 @@
        {% for variant in variants %}
          {%  if current_title == variant.title %}
             <span class="price">({{ variant.price | money }})</span>
-           {%  if indexN != 1 %}
+           {%  if index_N != 1 %}
              {%  assign index_prv = forloop.index | minus: 2 %}
              {%  assign variant_prev  = variants[index_prv] %}
              {%  assign save = variant.price | minus: variant_prev.price %}
